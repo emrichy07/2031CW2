@@ -10,7 +10,7 @@ def load_password_blacklist():
     except FileNotFoundError:
         return set()
     
-PASSWORD_BLACKLIST = load_password_blacklist
+PASSWORD_BLACKLIST = load_password_blacklist()
 
 def validate_password(password):
     if len(password) < 8:

@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Register</h1>
 
-<!-- Flash Messages (Part B - Show validation errors) -->
+<!-- Flash Messages -->
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
     {% for category, message in messages %}
@@ -17,23 +17,41 @@
   {% endif %}
 {% endwith %}
 
-<!-- Password Requirements (Part B) -->
-{% if requirements %}
-  <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #dee2e6;">
-    <h3 style="margin-top: 0;">Password Requirements:</h3>
-    <ul style="margin-bottom: 0;">
-      {% for req in requirements %}
-        <li>{{ req }}</li>
-      {% endfor %}
-    </ul>
-  </div>
-{% endif %}
-
+<!-- ✅ PART D: CSRF Protection with FlaskForm -->
 <form method="POST" novalidate>
-  Username: <input type="text" name="username"><br>
-  Password: <input type="password" name="password"><br>
-  Biography: <input type="text" name="bio"><br>
-  <input type="submit" value="Register">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+  
+  <p>
+    {{ form.username.label }}<br>
+    {{ form.username(size=32) }}
+    {% for error in form.username.errors %}
+      <span style="color: red;">{{ error }}</span><br>
+    {% endfor %}
+  </p>
+  
+  <p>
+    {{ form.password.label }}<br>
+    {{ form.password(size=32) }}
+    {% for error in form.password.errors %}
+      <span style="color: red;">{{ error }}</span><br>
+    {% endfor %}
+  </p>
+  
+  <p>
+    {{ form.bio.label }}<br>
+    {{ form.bio(rows=4, cols=50) }}
+    {% for error in form.bio.errors %}
+      <span style="color: red;">{{ error }}</span><br>
+    {% endfor %}
+    <small style="color: #666;">HTML tags allowed: &lt;b&gt; &lt;i&gt; &lt;u&gt; &lt;em&gt; &lt;strong&gt; &lt;p&gt; &lt;br&gt;</small>
+  </p>
+  
+  <p>
+    {{ form.role.label }}<br>
+    {{ form.role() }}
+  </p>
+  
+  <p>{{ form.submit() }}</p>
 </form>
 
 <p>Already have an account? <a href="{{ url_for('main.login') }}">Login here</a></p>

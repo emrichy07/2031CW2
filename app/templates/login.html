@@ -3,19 +3,44 @@
 {% block content %}
 <h1>Login</h1>
 
-<!-- Flash messages -->
+<!-- Flash Messages -->
 {% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-{% for category, message in messages %}
-<p class="text-danger">{{ message }}</p>
-{% endfor %}
-{% endif %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div style="padding: 10px; margin-bottom: 15px; border-radius: 5px; 
+                  {% if category == 'error' %}background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;
+                  {% elif category == 'success' %}background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;
+                  {% endif %}">
+        <strong>{{ category.title() }}:</strong> {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
 {% endwith %}
 
+<!-- ✅ PART D: CSRF Protection (Lecture 8, Section 6.1) -->
 <form method="POST" novalidate>
-  Username: <input type="text" name="username"><br>
-  Password: <input type="password" name="password"><br>
-  <input type="submit" value="Login">
+  <!-- CSRF Token (hidden field) -->
+  {{ form.hidden_tag() }}
+  
+  <p>
+    {{ form.username.label }}<br>
+    {{ form.username(size=32) }}
+    <!-- ✅ PART A: Display field-specific errors (Lecture 3, Section 4.1.4) -->
+    {% for error in form.username.errors %}
+      <span style="color: red;">{{ error }}</span><br>
+    {% endfor %}
+  </p>
+  
+  <p>
+    {{ form.password.label }}<br>
+    {{ form.password(size=32) }}
+    {% for error in form.password.errors %}
+      <span style="color: red;">{{ error }}</span><br>
+    {% endfor %}
+  </p>
+  
+  <p>{{ form.submit() }}</p>
 </form>
-{% endblock %}
 
+<p>Don't have an account? <a href="{{ url_for('main.register') }}">Register here</a></p>
+{% endblock %}

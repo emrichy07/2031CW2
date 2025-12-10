@@ -4,13 +4,11 @@ from logging.handlers import RotatingFileHandler
 from flask import Flask, render_template
 from werkzeug.security import generate_password_hash
 from config import config_dict
-from app.extensions import db, get_fernet  # Import from extensions
-
+from app.extensions import db, get_fernet, csrf 
 
 def create_app():
     app = Flask(__name__)
     
-    # Dynamic configuration loading based on FLASK_ENV
     env = os.environ.get('FLASK_ENV', 'development')
 
     if env == 'production':
@@ -21,14 +19,13 @@ def create_app():
     else:
         app.config.from_object(config_dict['development'])
 
-    # Initialize database
     db.init_app(app)
     
-    # Register blueprints
+    csrf.init_app(app)
+    
     from .routes import main
     app.register_blueprint(main)
 
-    # Register error handlers
     @app.errorhandler(403)
     def forbidden(error):
         app.logger.warning(f"403 Forbidden: {error}")
@@ -45,7 +42,6 @@ def create_app():
         db.session.rollback()
         return render_template('500.html'), 500
     
-    # Configure logging
     if not app.debug:
         if not os.path.exists('logs'):
             os.mkdir('logs')
@@ -66,13 +62,11 @@ def create_app():
         app.logger.setLevel(logging.INFO)
         app.logger.info('SecureApp startup')
     
-    # Initialize database and seed data
     with app.app_context():
         from .models import User
         db.drop_all()
         db.create_all()
 
-        # ✅ Get Fernet cipher INSIDE app context
         fernet = get_fernet()
 
         users = [
@@ -82,10 +76,10 @@ def create_app():
         ]
 
         for user_data in users:
-            # Hash password (Part G)
+            # Hash password
             hashed_password = generate_password_hash(user_data["password"])
             
-            # Encrypt bio (Part G)
+            # Encrypt bio
             encrypted_bio = fernet.encrypt(user_data["bio"].encode()).decode()
 
             user = User(

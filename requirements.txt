@@ -2,3 +2,6 @@ flask
 flask-sqlalchemy
 python-dotenv
 cryptography
+Flask-WTF
+bleach
+email-validator

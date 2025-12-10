@@ -4,8 +4,8 @@ from sqlalchemy import text
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.extensions import db, get_fernet
 from app.models import User
-from app.validators import validate_password, get_password_requirements
-
+from app.forms import LoginForm, RegistrationForm, ChangePasswordForm
+from flask import request, render_template, redirect, url_for, session, Blueprint, flash, abort, current_app
 main = Blueprint('main', __name__)
 
 @main.route('/')
@@ -14,9 +14,15 @@ def home():
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+
+    form = LoginForm()
+    print(f"[DEBUG] Form object: {form}")  # Debug line
+    print(f"[DEBUG] CSRF enabled: {current_app.config.get('WTF_CSRF_ENABLED')}")  # Debug line
+    
+
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
         
         row = db.session.execute(
             text("SELECT * FROM user WHERE username = :username"),
@@ -33,12 +39,13 @@ def login():
                 session['user'] = user.username
                 session['role'] = user.role
                 session['bio'] = decrypted_bio
+                flash("Login successful!", 'success')
                 return redirect(url_for('main.dashboard'))
             else:
                 flash('Login credentials are invalid, please try again')
         else:
             flash('Login credentials are invalid, Please try again')
-    return render_template('login.html')
+    return render_template('login.html', form=form)
 
 @main.route('/dashboard')
 def dashboard():
@@ -50,24 +57,18 @@ def dashboard():
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        bio = request.form['bio']
-        role = request.form.get('role', 'user')
+    form = RegistrationForm()
 
-        is_valid, error_message = validate_password(password)
-        print(f"[DEBUG] Password: {password}")  # Debug line
-        print(f"[DEBUG] Is valid: {is_valid}")  # Debug line
-        print(f"[DEBUG] Error: {error_message}")  # Debug line
-        if not is_valid:
-            flash(error_message, 'error')
-            requirements = get_password_requirements()
-            return render_template('register.html', requirements = requirements)
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        role = form.role.data
+
+        sanitized_bio = form.sanitize_bio()
         
         hashed_password = generate_password_hash(password)
         fernet = get_fernet()
-        encrypted_bio = fernet.encrypt(bio.encode()).decode()
+        encrypted_bio = fernet.encrypt(sanitized_bio.encode()).decode()
         
         try:
             db.session.execute(
@@ -80,13 +81,8 @@ def register():
         except Exception as e:
             db.session.rollback()
             flash('Username already exists. Please choose another.', 'error')
-            requirements = get_password_requirements()
-            return render_template('register.html', requirements=requirements)
     
-    requirements = get_password_requirements()
-    return render_template('register.html', requirements=requirements)
-
-
+    return render_template('register.html', form = form)
 
 
 @main.route('/admin-panel')
@@ -119,9 +115,12 @@ def change_password():
 
     username = session['user']
 
-    if request.method == 'POST':
-        current_password = request.form.get('current_password', '')
-        new_password = request.form.get('new_password', '')
+    form = ChangePasswordForm()
+
+    if form.validate_on_submit():
+        current_password = form.current_password.data
+        new_password = form.new_password.data
+
 
         user_row = db.session.execute(
             text("SELECT * FROM user WHERE username = :username LIMIT 1"),
@@ -130,23 +129,13 @@ def change_password():
 
         if not user_row:
             flash('User not found', 'error')
-            return render_template('change_password.html')
+            return render_template('change_password.html', form = form)
 
         user = db.session.get(User, user_row['id'])
 
         if not check_password_hash(user.password, current_password):
             flash('Current password is incorrect', 'error')
-            return render_template('change_password.html')
-
-        if new_password == current_password:
-            flash('New password must be different from the current password', 'error')
-            return render_template('change_password.html')
-
-        is_valid, error_message = validate_password(new_password)
-        if not is_valid:
-            flash(error_message, 'error')
-            requirements = get_password_requirements()
-            return render_template('change_password.html', requirements=requirements)
+            return render_template('change_password.html', form=form)
 
         new_hashed_password = generate_password_hash(new_password)
         
@@ -159,7 +148,6 @@ def change_password():
         flash('Password changed successfully', 'success')
         return redirect(url_for('main.dashboard'))
 
-    requirements = get_password_requirements()
-    return render_template('change_password.html', requirements=requirements)
+    return render_template('change_password.html', form = form)
 
 

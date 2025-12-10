@@ -2,14 +2,14 @@ import os
 from flask_sqlalchemy import SQLAlchemy
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv
+from flask_wtf.csrf import CSRFProtect
 
-# Load environment variables
 load_dotenv()
 
-# Initialize DB here
 db = SQLAlchemy()
 
-# Define helper function here
+csrf = CSRFProtect()
+
 def get_fernet():
     key = os.environ.get('FERNET_KEY')
     if not key:
