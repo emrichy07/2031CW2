@@ -6,33 +6,26 @@ def load_password_blacklist():
 
     try:
         with open(blacklist_path, 'r') as f:
-            return set (line.strip().lower() for line in f if line.strip())
+            return set(line.strip().lower() for line in f if line.strip())
     except FileNotFoundError:
+        print(f"WARNING: Password blacklist not found at {blacklist_path}")
         return set()
     
 PASSWORD_BLACKLIST = load_password_blacklist()
 
 def validate_password(password):
     if len(password) < 8:
-        return False, "Password has to be 8 characters or more"
+        return False, "Password has to be atleast 8 character long"
     if not re.search(r'[A-Z]', password):
-        return False, "Password has to contain one uppercase letter"
+        return False, "Password must have at least 1 uppercase letter"
     if not re.search(r'[a-z]', password):
-        return False, "Password has to contain a lowercase letter"
-    if not re.search(r'\d',password):
-        return False, "Password has to contain a number"
+        return False, "Password must have at least 1 lowercase letter"
+    if not re.search(r'\d', password):
+        return False, "Password has to contain at least 1 number"
     if not re.search(r'[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]', password):
-        return False, "Password has to contain a special characeter (!@#$%^&*()_+-=[]{}|;:,.<>?)"
+        return False, "Password has to contain at least 1 special character"
+    
     if password.lower() in PASSWORD_BLACKLIST:
-        return False, "This password is too common. Please change it to a stronger password"
-    return True,"Password is Valid"
-
-def get_password_requirements():
-    return [
-        "At least 8 characters long",
-        "Contains at least one uppercase letter (A-Z)",
-        "Contains at least one lowercase letter (a-z)",
-        "Contains at least one number (0-9)",
-        "Contains at least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)",
-        "Not a commonly used password"
-    ]
+        return False, "Pick another one, your password is too common"
+        
+    return True, "Valid"

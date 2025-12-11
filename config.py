@@ -4,64 +4,57 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    """Base configuration with common settings"""
+    """Base configuration with common settings."""
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
-    # Session security settings (Part G)
+    # Session security settings 
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = 'Lax'
     
-    # ✅ CSRF Protection (Part D - Lecture 8, Section 6.1)
+    # CSRF Protection
     WTF_CSRF_ENABLED = True
-    WTF_CSRF_TIME_LIMIT = None  # No time limit for tokens
+    WTF_CSRF_TIME_LIMIT = None  
 
 
 class DevelopmentConfig(Config):
-    """Development environment configuration"""
+    """Development environment configuration."""
     DEBUG = os.environ.get('DEBUG', 'True') == 'True'
-    SECRET_KEY = os.environ.get('SECRET_KEY', 'demo-secret-key-change-in-production')
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-prod')
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///site.db')
     
-    # Development-specific settings
-    SESSION_COOKIE_SECURE = False  # Allow HTTP in development
+    SESSION_COOKIE_SECURE = False
 
 
 class ProductionConfig(Config):
-    """Production environment configuration"""
+    """Production environment configuration."""
     DEBUG = False
     SECRET_KEY = os.environ.get('SECRET_KEY')
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     
-    # Production security settings
-    SESSION_COOKIE_SECURE = True  # Require HTTPS in production
+    SESSION_COOKIE_SECURE = True
     
-    # Validate critical settings
     @staticmethod
     def validate():
         """
-        In production, secrets MUST come from environment variables.
+        Ensure critical secrets are present in production.
         """
         if not os.environ.get('SECRET_KEY'):
-            raise ValueError(
-                "PRODUCTION ERROR: SECRET_KEY must be set as environment variable. "
-                "This is a security requirement to prevent hardcoded secrets."
-            )
+            raise ValueError("PRODUCTION ERROR: SECRET_KEY environment variable is missing.")
+            
         if not os.environ.get('DATABASE_URL'):
-            raise ValueError(
-                "PRODUCTION ERROR: DATABASE_URL must be set as environment variable."
-            )
+            raise ValueError("PRODUCTION ERROR: DATABASE_URL environment variable is missing.")
 
 
 class TestingConfig(Config):
-    """Testing environment configuration"""
+    """Testing environment configuration."""
     TESTING = True
     DEBUG = False
     SECRET_KEY = 'test-key'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'  # In-memory database for tests
-    WTF_CSRF_ENABLED = False  # Disable CSRF for testing
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'  
+    WTF_CSRF_ENABLED = False
 
 
-# Dictionary to map environment names to config classes
+# Dictionary for env names to config class
 config_dict = {
     'development': DevelopmentConfig,
     'production': ProductionConfig,

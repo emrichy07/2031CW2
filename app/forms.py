@@ -45,21 +45,22 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Register')
     
     def validate_password(self, field):
+
         is_valid, error_message = check_password_policy(field.data)
         if not is_valid:
             raise ValidationError(error_message)
     
     def sanitize_bio(self):
+        
         allowed_tags = ['b', 'i', 'u', 'em', 'strong', 'p', 'br']
-        allowed_attributes = {}  # No attributes allowed
+        allowed_attributes = {}  
         
         clean_bio = bleach.clean(
             self.bio.data,
             tags=allowed_tags,
             attributes=allowed_attributes,
-            strip=True  # Remove disallowed tags entirely
+            strip=True
         )
-        
         return clean_bio
 
 
@@ -70,16 +71,15 @@ class ChangePasswordForm(FlaskForm):
     
     new_password = PasswordField('New Password', validators=[
         DataRequired(message="New password is required"),
-        Length(min=8, message="Password must be at least 8 characters")
+        Length(min=8, message="Password has to be atleast 8 characters")
     ])
     
     submit = SubmitField('Change Password')
     
     def validate_new_password(self, field):
-        
         is_valid, error_message = check_password_policy(field.data)
         if not is_valid:
             raise ValidationError(error_message)
         
         if field.data == self.current_password.data:
-            raise ValidationError("New password must be different from current password")
+            raise ValidationError("New password has to be different than current password")

@@ -11,6 +11,7 @@ from flask_talisman import Talisman
 def create_app():
     app = Flask(__name__)
     
+    # configuration
     env = os.environ.get('FLASK_ENV', 'development')
 
     if env == 'production':
@@ -21,6 +22,7 @@ def create_app():
     else:
         app.config.from_object(config_dict['development'])
 
+    # initalise extensions
     db.init_app(app)
     csrf.init_app(app)
     login_manager.init_app(app)
@@ -34,7 +36,7 @@ def create_app():
         from .models import User
         return db.session.get(User, int(user_id))
     
-    # --- SECURITY HEADERS (CSP) SETUP ---
+    # Security headers
     if env == 'production':
         # Strict CSP for production
         csp = {
@@ -50,11 +52,11 @@ def create_app():
                  strict_transport_security=True,
                  force_https=True)
     else:
-        # ✅ FIXED: Relaxed CSP for development + Allow External CSS/JS
+        # Relaxing CSP to allow assets (make UI look pretty again kinda)
         csp = {
             'default-src': ["'self'"],
-            'script-src': ["'self'", "'unsafe-inline'", "https://*"],  # Allows Bootstrap JS
-            'style-src': ["'self'", "'unsafe-inline'", "https://*"],   # Allows Bootstrap CSS
+            'script-src': ["'self'", "'unsafe-inline'", "https://*"],
+            'style-src': ["'self'", "'unsafe-inline'", "https://*"],
             'img-src': ["'self'", 'data:', "https://*"],
             'font-src': ["'self'", "data:", "https://*"]
         }
@@ -66,7 +68,7 @@ def create_app():
     from .routes import main
     app.register_blueprint(main)
 
-    # --- ERROR HANDLERS ---
+    # Error handling
     @app.errorhandler(403)
     def forbidden(error):
         app.logger.warning(f"403 Forbidden: {error}")
@@ -83,25 +85,18 @@ def create_app():
         db.session.rollback()
         return render_template('500.html'), 500
     
-    # --- LOGGING SETUP ---
-    # I removed the manual logging block that was here because 
-    # the function configure_logging(app) below handles it better.
+    # Logging Setup
     configure_logging(app)
     
-    # --- DATABASE SEEDING ---
-    # I removed the duplicate db.drop_all() that was here.
-    # We only need to do this once, inside the block below.
-
+    # Database senfing
     with app.app_context():
         from .models import User
-        # NOTE: In a real app, you wouldn't drop_all every time. 
-        # But for this assignment, it resets the DB cleanly on restart.
+        # Resets the database after use
         db.drop_all() 
         db.create_all()
 
         fernet = get_fernet()
 
-        # Seed Users
         users = [
             {"username": "user1@email.com", "password": "Userpass!23", "role": "user", "bio": "I'm a basic user"},
             {"username": "mod1@email.com", "password": "Modpass!23", "role": "moderator", "bio": "I'm a moderator"},
@@ -124,6 +119,7 @@ def create_app():
     return app
 
 def configure_logging(app):
+    """Setting up structured logging to file and console"""
     if not os.path.exists('logs'):
         os.mkdir('logs')
     
