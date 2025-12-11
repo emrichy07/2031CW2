@@ -57,7 +57,9 @@ def roles_required(*roles):
                 f"role={current_user.role}, endpoint={request.path}"
             )
             return f(*args, **kwargs)
+        
         return wrapped
+    
     return decorator
 
 
@@ -66,6 +68,7 @@ def admin_required(f):
     def wrapped(*args, **kwargs):
         if not current_user.is_authenticated or current_user.role != 'admin':
             current_app.logger.warning(
+
                 f"Admin access DENIED: user={getattr(current_user, 'username', 'anonymous')}, "
                 f"role={getattr(current_user, 'role', 'none')}, "
                 f"endpoint={request.path}, IP={request.remote_addr}"
@@ -73,6 +76,7 @@ def admin_required(f):
             abort(403)
         
         current_app.logger.info(
+            
             f"Admin access GRANTED: user={current_user.username}, "
             f"endpoint={request.path}"
         )

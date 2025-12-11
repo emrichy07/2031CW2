@@ -3,26 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 Not Found - SecureApp</title>
+    <title>404 Not Found</title>
     <style>
+
         body {
+
             font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #ea66d4 0%, #764ba2 100%);
             display: flex;
+
             justify-content: center;
-            align-items: center;
             height: 100vh;
             margin: 0;
+            align-items: center;
         }
-        .error-container {
+        .error-box {
             background: white;
             padding: 40px;
             border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             text-align: center;
             max-width: 500px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            
         }
         h1 {
+
             color: #34db9e;
             font-size: 72px;
             margin: 0 0 10px 0;
@@ -36,7 +41,8 @@
             font-size: 18px;
             margin-bottom: 30px;
         }
-        .btn {
+
+        .button {
             display: inline-block;
             padding: 12px 30px;
             background: #2a2c34;
@@ -46,18 +52,21 @@
             margin: 5px;
             transition: background 0.3s;
         }
-        .btn:hover {
+
+        .button:hover {
             background: #2a2c37;
         }
     </style>
 </head>
+
 <body>
-    <div class="error-container">
+    <div class="error-box">
         <h1>404</h1>
+
         <h2>Oops! Page Not Found</h2>
         <p>The page you're looking for doesn't exist yikes!</p>
-        <a href="/" class="btn">Go to Homepage</a>
-        <a href="/login" class="btn">Go to Login</a>
+        <a href="/" class="btn"> Homepage</a>
+        <a href="/login" class="btn">Login</a>
     </div>
 </body>
 </html>

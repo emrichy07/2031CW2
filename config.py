@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    """Base configuration with common settings."""
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Session security settings 
@@ -17,7 +16,6 @@ class Config:
 
 
 class DevelopmentConfig(Config):
-    """Development environment configuration."""
     DEBUG = os.environ.get('DEBUG', 'True') == 'True'
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-prod')
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///site.db')
@@ -26,7 +24,7 @@ class DevelopmentConfig(Config):
 
 
 class ProductionConfig(Config):
-    """Production environment configuration."""
+
     DEBUG = False
     SECRET_KEY = os.environ.get('SECRET_KEY')
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
@@ -35,18 +33,15 @@ class ProductionConfig(Config):
     
     @staticmethod
     def validate():
-        """
-        Ensure critical secrets are present in production.
-        """
         if not os.environ.get('SECRET_KEY'):
-            raise ValueError("PRODUCTION ERROR: SECRET_KEY environment variable is missing.")
+            raise ValueError("Erorr -> SECRET_KEY environment variable is missing.")
             
         if not os.environ.get('DATABASE_URL'):
-            raise ValueError("PRODUCTION ERROR: DATABASE_URL environment variable is missing.")
+            raise ValueError(" ERROR--> DATABASE_URL environment variable is missing.")
 
 
 class TestingConfig(Config):
-    """Testing environment configuration."""
+    
     TESTING = True
     DEBUG = False
     SECRET_KEY = 'test-key'

@@ -5,6 +5,7 @@ from app.validators import validate_password as check_password_policy
 import bleach
 
 class LoginForm(FlaskForm):
+
     username = StringField('Username', validators=[
         DataRequired(message="Username is required"),
         Email(message="Must be a valid email address"),
@@ -13,17 +14,18 @@ class LoginForm(FlaskForm):
     
     password = PasswordField('Password', validators=[
         DataRequired(message="Password is required"),
-        Length(min=8, message="Password must be at least 8 characters")
+        Length(min=8, message="Password Must be at least 8 characters")
     ])
     
     submit = SubmitField('Login')
 
 
 class RegistrationForm(FlaskForm):
+
     username = StringField('Username (Email)', validators=[
         DataRequired(message="Username is required"),
         Email(message="Must be a valid email address"),
-        Length(min=3, max=80, message="Username must be between 3 and 80 characters")
+        Length(min=3, max=80, message="Username has to be between 3 and 80 characters")
     ])
     
     password = PasswordField('Password', validators=[
@@ -33,7 +35,7 @@ class RegistrationForm(FlaskForm):
     
     bio = TextAreaField('Biography', validators=[
         DataRequired(message="Biography is required"),
-        Length(min=10, max=500, message="Bio must be between 10 and 500 characters")
+        Length(min=10, max=500, message="Bio must be atleast 10 to 500 characters")
     ])
     
     role = SelectField('Role', choices=[
@@ -61,6 +63,7 @@ class RegistrationForm(FlaskForm):
             attributes=allowed_attributes,
             strip=True
         )
+        
         return clean_bio
 
 
