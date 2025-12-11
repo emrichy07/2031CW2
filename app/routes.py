@@ -6,6 +6,10 @@ from app.extensions import db, get_fernet
 from app.models import User
 from app.forms import LoginForm, RegistrationForm, ChangePasswordForm
 from flask import request, render_template, redirect, url_for, session, Blueprint, flash, abort, current_app
+from app.decorators import role_required, roles_required, admin_required
+from flask_login import login_user, logout_user, login_required, current_user
+
+
 main = Blueprint('main', __name__)
 
 @main.route('/')
@@ -16,8 +20,8 @@ def home():
 def login():
 
     form = LoginForm()
-    print(f"[DEBUG] Form object: {form}")  # Debug line
-    print(f"[DEBUG] CSRF enabled: {current_app.config.get('WTF_CSRF_ENABLED')}")  # Debug line
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))
     
 
     if form.validate_on_submit():
@@ -35,7 +39,13 @@ def login():
             if check_password_hash(user.password, password):
                 fernet = get_fernet()
                 decrypted_bio = fernet.decrypt(user.bio.encode()).decode()
-
+                login_user(user, remember=False)
+                
+                # ✅ PHASE 5 - PART H: Log successful login (Lecture 13, Section 2.1)
+                current_app.logger.info(
+                    f"Login successful: user={user.username}, role={user.role}, "
+                    f"IP={request.remote_addr}"
+                )
                 session['user'] = user.username
                 session['role'] = user.role
                 session['bio'] = decrypted_bio
@@ -46,6 +56,16 @@ def login():
         else:
             flash('Login credentials are invalid, Please try again')
     return render_template('login.html', form=form)
+@main.route('/logout')
+@login_required
+def logout():
+    # ✅ PHASE 5 - PART H: Log logout
+    current_app.logger.info(
+        f"Logout: user={current_user.username}, IP={request.remote_addr}"
+    )
+    logout_user()
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('main.home'))
 
 @main.route('/dashboard')
 def dashboard():
@@ -76,8 +96,14 @@ def register():
                 {"username": username, "password": hashed_password, "role": role, "bio": encrypted_bio}
             )
             db.session.commit()
+            current_app.logger.info(
+                f"New user registered: username={username}, role={role}, "
+                f"IP={request.remote_addr}"
+            )
+
             flash('Registration successful! Please log in.', 'success')
             return redirect(url_for('main.login'))
+        
         except Exception as e:
             db.session.rollback()
             flash('Username already exists. Please choose another.', 'error')
@@ -86,6 +112,8 @@ def register():
 
 
 @main.route('/admin-panel')
+@login_required
+@admin_required
 def admin():
     if session.get('role') != 'admin':
         stack = ''.join(traceback.format_stack(limit=25))
@@ -93,6 +121,8 @@ def admin():
     return render_template('admin.html')
 
 @main.route('/moderator')
+@login_required
+@role_required('moderator')
 def moderator():
     if session.get('role') != 'moderator':
         stack = ''.join(traceback.format_stack(limit=25))
@@ -100,6 +130,8 @@ def moderator():
     return render_template('moderator.html')
 
 @main.route('/user-dashboard')
+@login_required
+@role_required('user')
 def user_dashboard():
     if session.get('role') != 'user':
         stack = ''.join(traceback.format_stack(limit=25))
@@ -108,6 +140,8 @@ def user_dashboard():
 
 
 @main.route('/change-password', methods=['GET', 'POST'])
+@login_required
+
 def change_password():
     if 'user' not in session:
         stack = ''.join(traceback.format_stack(limit=25))
@@ -145,6 +179,10 @@ def change_password():
         )
         db.session.commit()
 
+        current_app.logger.info(
+            f"Password changed: user={current_user.username}, IP={request.remote_addr}"
+        )
+        
         flash('Password changed successfully', 'success')
         return redirect(url_for('main.dashboard'))
 

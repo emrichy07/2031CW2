@@ -5,3 +5,5 @@ cryptography
 Flask-WTF
 bleach
 email-validator
+Flask-Login
+Flask-Talisman
