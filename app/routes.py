@@ -182,7 +182,7 @@ def change_password():
         current_app.logger.info(
             f"Password changed: user={current_user.username}, IP={request.remote_addr}"
         )
-        
+
         flash('Password changed successfully', 'success')
         return redirect(url_for('main.dashboard'))
 

@@ -34,6 +34,7 @@ def create_app():
         from .models import User
         return db.session.get(User, int(user_id))
     
+    # --- SECURITY HEADERS (CSP) SETUP ---
     if env == 'production':
         # Strict CSP for production
         csp = {
@@ -49,12 +50,13 @@ def create_app():
                  strict_transport_security=True,
                  force_https=True)
     else:
-        # Relaxed CSP for development (no HTTPS enforcement)
+        # ✅ FIXED: Relaxed CSP for development + Allow External CSS/JS
         csp = {
             'default-src': ["'self'"],
-            'script-src': ["'self'", "'unsafe-inline'"],  # Allow inline scripts in dev
-            'style-src': ["'self'", "'unsafe-inline'"],
-            'img-src': ["'self'", 'data:']
+            'script-src': ["'self'", "'unsafe-inline'", "https://*"],  # Allows Bootstrap JS
+            'style-src': ["'self'", "'unsafe-inline'", "https://*"],   # Allows Bootstrap CSS
+            'img-src': ["'self'", 'data:', "https://*"],
+            'font-src': ["'self'", "data:", "https://*"]
         }
         Talisman(app,
                  content_security_policy=csp,
@@ -64,6 +66,7 @@ def create_app():
     from .routes import main
     app.register_blueprint(main)
 
+    # --- ERROR HANDLERS ---
     @app.errorhandler(403)
     def forbidden(error):
         app.logger.warning(f"403 Forbidden: {error}")
@@ -80,39 +83,25 @@ def create_app():
         db.session.rollback()
         return render_template('500.html'), 500
     
+    # --- LOGGING SETUP ---
+    # I removed the manual logging block that was here because 
+    # the function configure_logging(app) below handles it better.
     configure_logging(app)
-    with app.app_context():
-        from .models import User
-        db.drop_all()
-        db.create_all()
-
-    if not app.debug:
-        if not os.path.exists('logs'):
-            os.mkdir('logs')
-        
-        file_handler = RotatingFileHandler(
-            'logs/secureapp.log', 
-            maxBytes=10240000, 
-            backupCount=10
-        )
-        
-        formatter = logging.Formatter(
-            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
-        )
-        file_handler.setFormatter(formatter)
-        file_handler.setLevel(logging.INFO)
-        
-        app.logger.addHandler(file_handler)
-        app.logger.setLevel(logging.INFO)
-        app.logger.info('SecureApp startup')
     
+    # --- DATABASE SEEDING ---
+    # I removed the duplicate db.drop_all() that was here.
+    # We only need to do this once, inside the block below.
+
     with app.app_context():
         from .models import User
-        db.drop_all()
+        # NOTE: In a real app, you wouldn't drop_all every time. 
+        # But for this assignment, it resets the DB cleanly on restart.
+        db.drop_all() 
         db.create_all()
 
         fernet = get_fernet()
 
+        # Seed Users
         users = [
             {"username": "user1@email.com", "password": "Userpass!23", "role": "user", "bio": "I'm a basic user"},
             {"username": "mod1@email.com", "password": "Modpass!23", "role": "moderator", "bio": "I'm a moderator"},
@@ -120,10 +109,7 @@ def create_app():
         ]
 
         for user_data in users:
-            # Hash password
             hashed_password = generate_password_hash(user_data["password"])
-            
-            # Encrypt bio
             encrypted_bio = fernet.encrypt(user_data["bio"].encode()).decode()
 
             user = User(
@@ -141,21 +127,18 @@ def configure_logging(app):
     if not os.path.exists('logs'):
         os.mkdir('logs')
     
-    # Rotating file handler (10MB max, keep 10 backups)
     file_handler = RotatingFileHandler(
         'logs/secureapp.log', 
-        maxBytes=10*1024*1024,  # 10MB
+        maxBytes=10*1024*1024, 
         backupCount=10
     )
     
-    # Set logging format (Lecture 13, Section 5.3)
     formatter = logging.Formatter(
         '%(asctime)s %(levelname)s [%(name)s] %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
     file_handler.setFormatter(formatter)
     
-    # Set appropriate log level (Lecture 13, Section 5.2)
     if app.debug:
         file_handler.setLevel(logging.DEBUG)
         app.logger.setLevel(logging.DEBUG)
@@ -163,10 +146,8 @@ def configure_logging(app):
         file_handler.setLevel(logging.INFO)
         app.logger.setLevel(logging.INFO)
     
-    # Add handler to app logger
     app.logger.addHandler(file_handler)
     
-    # Initial log entry
     app.logger.info('='*50)
     app.logger.info('SecureApp startup')
     app.logger.info(f'Environment: {os.environ.get("FLASK_ENV", "development")}')

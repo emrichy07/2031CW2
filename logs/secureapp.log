@@ -1,0 +1,84 @@
+2025-12-11 00:37:42 INFO [app] ==================================================
+2025-12-11 00:37:42 INFO [app] SecureApp startup
+2025-12-11 00:37:42 INFO [app] Environment: development
+2025-12-11 00:37:42 INFO [app] Debug mode: True
+2025-12-11 00:37:42 INFO [app] ==================================================
+2025-12-11 00:37:44 INFO [app] ==================================================
+2025-12-11 00:37:44 INFO [app] SecureApp startup
+2025-12-11 00:37:44 INFO [app] Environment: development
+2025-12-11 00:37:44 INFO [app] Debug mode: True
+2025-12-11 00:37:44 INFO [app] ==================================================
+2025-12-11 00:38:52 WARNING [app] 404 Not Found: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2025-12-11 00:38:52 WARNING [app] 404 Not Found: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2025-12-11 00:46:36 INFO [app] ==================================================
+2025-12-11 00:46:36 INFO [app] SecureApp startup
+2025-12-11 00:46:36 INFO [app] Environment: development
+2025-12-11 00:46:36 INFO [app] Debug mode: True
+2025-12-11 00:46:36 INFO [app] ==================================================
+2025-12-11 00:51:58 INFO [app] ==================================================
+2025-12-11 00:51:58 INFO [app] SecureApp startup
+2025-12-11 00:51:58 INFO [app] Environment: development
+2025-12-11 00:51:58 INFO [app] Debug mode: True
+2025-12-11 00:51:58 INFO [app] ==================================================
+2025-12-11 00:52:11 INFO [app] ==================================================
+2025-12-11 00:52:11 INFO [app] SecureApp startup
+2025-12-11 00:52:11 INFO [app] Environment: development
+2025-12-11 00:52:11 INFO [app] Debug mode: True
+2025-12-11 00:52:11 INFO [app] ==================================================
+2025-12-11 00:52:13 INFO [app] ==================================================
+2025-12-11 00:52:13 INFO [app] SecureApp startup
+2025-12-11 00:52:13 INFO [app] Environment: development
+2025-12-11 00:52:13 INFO [app] Debug mode: True
+2025-12-11 00:52:13 INFO [app] ==================================================
+2025-12-11 00:52:22 WARNING [app] 404 Not Found: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2025-12-11 00:52:27 WARNING [app] 404 Not Found: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2025-12-11 00:52:36 WARNING [app] 404 Not Found: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+2025-12-11 00:53:18 INFO [app] ==================================================
+2025-12-11 00:53:18 INFO [app] SecureApp startup
+2025-12-11 00:53:18 INFO [app] Environment: development
+2025-12-11 00:53:18 INFO [app] Debug mode: True
+2025-12-11 00:53:18 INFO [app] ==================================================
+2025-12-11 00:54:42 INFO [app] ==================================================
+2025-12-11 00:54:42 INFO [app] SecureApp startup
+2025-12-11 00:54:42 INFO [app] Environment: development
+2025-12-11 00:54:42 INFO [app] Debug mode: True
+2025-12-11 00:54:42 INFO [app] ==================================================
+2025-12-11 00:54:44 INFO [app] ==================================================
+2025-12-11 00:54:44 INFO [app] SecureApp startup
+2025-12-11 00:54:44 INFO [app] Environment: development
+2025-12-11 00:54:44 INFO [app] Debug mode: True
+2025-12-11 00:54:44 INFO [app] ==================================================
+2025-12-11 00:56:14 INFO [app] New user registered: username=ella@icloud.com, role=user, IP=127.0.0.1
+2025-12-11 00:56:46 INFO [app] ==================================================
+2025-12-11 00:56:46 INFO [app] SecureApp startup
+2025-12-11 00:56:46 INFO [app] Environment: development
+2025-12-11 00:56:46 INFO [app] Debug mode: True
+2025-12-11 00:56:46 INFO [app] ==================================================
+2025-12-11 00:56:48 INFO [app] ==================================================
+2025-12-11 00:56:48 INFO [app] SecureApp startup
+2025-12-11 00:56:48 INFO [app] Environment: development
+2025-12-11 00:56:48 INFO [app] Debug mode: True
+2025-12-11 00:56:48 INFO [app] ==================================================
+2025-12-11 00:57:25 INFO [app] New user registered: username=test@test.com, role=user, IP=127.0.0.1
+2025-12-11 01:04:49 INFO [app] ==================================================
+2025-12-11 01:04:49 INFO [app] SecureApp startup
+2025-12-11 01:04:49 INFO [app] Environment: development
+2025-12-11 01:04:49 INFO [app] Debug mode: True
+2025-12-11 01:04:49 INFO [app] ==================================================
+2025-12-11 01:05:56 INFO [app] ==================================================
+2025-12-11 01:05:56 INFO [app] SecureApp startup
+2025-12-11 01:05:56 INFO [app] Environment: development
+2025-12-11 01:05:56 INFO [app] Debug mode: True
+2025-12-11 01:05:56 INFO [app] ==================================================
+2025-12-11 01:05:57 INFO [app] ==================================================
+2025-12-11 01:05:57 INFO [app] SecureApp startup
+2025-12-11 01:05:57 INFO [app] Environment: development
+2025-12-11 01:05:57 INFO [app] Debug mode: True
+2025-12-11 01:05:57 INFO [app] ==================================================
+2025-12-11 01:08:43 INFO [app] Login successful: user=user1@email.com, role=user, IP=127.0.0.1
+2025-12-11 01:09:00 WARNING [app] Admin access denied: user=user1@email.com, role=user, endpoint=/admin-panel, IP=127.0.0.1
+2025-12-11 01:09:00 WARNING [app] 403 Forbidden: 403 Forbidden: You don't have the permission to access the requested resource. It is either read-protected or not readable by the server.
+2025-12-11 01:09:41 INFO [app] Logout: user=user1@email.com, IP=127.0.0.1
+2025-12-11 01:09:49 INFO [app] Login successful: user=admin1@email.com, role=admin, IP=127.0.0.1
+2025-12-11 01:10:51 INFO [app] New user registered: username=test@test.com, role=user, IP=127.0.0.1
+2025-12-11 01:12:35 INFO [app] Logout: user=admin1@email.com, IP=127.0.0.1
